@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spark Lead Tracker V3</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="logo">S</div><p class="eyebrow">SPARK INTERNAL TOOL</p>
+    <h1>Lead Tracker</h1><p>Sign in with your Spark Google account to manage enquiries, follow-ups and sales opportunities.</p>
+    <div id="googleBtn" style="margin-top:18px;display:flex;justify-content:center"></div>
+    <p class="hint" id="loginStatus"></p>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+<aside>
+  <div class="brand"><div class="logo">S</div><div><b>SPARK</b><small>Lead Tracker V3</small></div></div>
+  <nav>
+    <button class="nav active" data-view="dashboard">Dashboard</button>
+    <button class="nav" data-view="leads">All Leads</button>
+    <button class="nav" data-view="pipeline">Pipeline</button>
+    <button class="nav" data-view="followups">Follow-ups</button>
+    <button class="nav" data-view="activity">Activity</button>
+  </nav>
+  <div class="sidebox"><span>Signed in as</span><b id="userDisplay">—</b><button id="logoutBtn">Sign out</button></div>
+</aside>
+
+<main>
+<header class="top">
+  <div><p class="eyebrow">SPARK HOLDINGS</p><h1 id="pageTitle">Marketing & Sales Dashboard</h1></div>
+  <div class="actions">
+    <span class="muted" id="syncStatus" style="align-self:center;margin-right:6px"></span>
+    <button id="notifyBtn" title="Enable browser notifications">🔔 <span id="notifCount">0</span></button>
+    <button id="exportBtn">Export CSV</button>
+    <button id="newLeadBtn" class="primary">+ New Lead</button>
+  </div>
+</header>
+
+<section id="dashboardView" class="view active">
+  <div class="cards">
+    <div><span>Total Leads</span><strong id="mTotal">0</strong></div>
+    <div><span>New</span><strong id="mNew">0</strong></div>
+    <div><span>Qualified</span><strong id="mQual">0</strong></div>
+    <div><span>Quoted</span><strong id="mQuoted">0</strong></div>
+    <div><span>Won</span><strong id="mWon">0</strong></div>
+    <div><span>Lost</span><strong id="mLost">0</strong></div>
+    <div><span>Conversion</span><strong id="mConv">0%</strong></div>
+  </div>
+  <div class="grid2">
+    <section class="panel"><div class="panelhead"><div><p class="eyebrow">Sales opportunity</p><h2>Pipeline value</h2></div><b id="pipelineValue">MWK 0</b></div><div class="progress"><i id="progressBar"></i></div><p class="muted">Qualified + quoted opportunities</p></section>
+    <section class="panel"><div class="panelhead"><div><p class="eyebrow">Marketing attribution</p><h2>Leads by source</h2></div></div><div id="sourceStats"></div></section>
+  </div>
+  <section class="panel"><div class="panelhead"><div><p class="eyebrow">Latest activity</p><h2>Recent leads</h2></div><button class="link" data-go="leads">View all →</button></div><div id="recent"></div></section>
+</section>
+
+<section id="leadsView" class="view"><section class="panel">
+<div class="toolbar"><input id="search" placeholder="Search customer, company, service..."><select id="businessFilter"><option value="">All businesses</option><option>Spark Holdings</option><option>Spark Security Solutions</option><option>Spark Cleaning Solutions</option></select><select id="statusFilter"><option value="">All statuses</option><option>New</option><option>Contacted</option><option>Qualified</option><option>Quoted</option><option>Won</option><option>Lost</option></select></div>
+<div id="allLeads"></div></section></section>
+
+<section id="pipelineView" class="view"><div class="kanban" id="kanban"></div></section>
+<section id="followupsView" class="view"><section class="panel"><div class="panelhead"><div><p class="eyebrow">Action required</p><h2>Follow-ups due</h2></div></div><div id="followups"></div></section></section>
+<section id="activityView" class="view"><section class="panel"><div class="panelhead"><div><p class="eyebrow">Shared audit trail</p><h2>Recent activity</h2></div></div><div id="activity"></div></section></section>
+<div id="toast" class="toast hidden"><b>🔔 New Lead Received</b><span id="toastText"></span></div>
+</main></div>
+
+<dialog id="dlg"><form id="leadForm">
+<div class="dialoghead"><div><p class="eyebrow">Lead record</p><h2 id="formTitle">New Lead</h2></div><button type="button" id="closeDlg" class="x">×</button></div>
+<input type="hidden" id="leadId">
+<div class="formgrid">
+<label>Customer name<input id="name" required></label><label>Company / organisation<input id="company"></label>
+<label>Phone<input id="phone"></label><label>Email<input id="email" type="email"></label>
+<label>Business<select id="business" required><option value="">Select</option><option>Spark Holdings</option><option>Spark Security Solutions</option><option>Spark Cleaning Solutions</option></select></label>
+<label>Product / service<select id="service" required><option value="">Select</option></select></label>
+<label>Lead source<select id="source" required><option value="">Select</option><option>WhatsApp</option><option>Phone</option><option>Email</option><option>Website</option><option>Facebook</option><option>Instagram</option><option>Referral</option><option>Walk-in</option><option>Other</option></select></label>
+<label>Status<select id="status"><option>New</option><option>Contacted</option><option>Qualified</option><option>Quoted</option><option>Won</option><option>Lost</option></select></label>
+<label>Estimated value (MWK)<input id="value" type="number" min="0"></label><label>Follow-up date<input id="followup" type="date"></label>
+<label>Assigned to<select id="assigned"><option value="">Unassigned</option></select></label><label>Next action<input id="nextAction" placeholder="Call, send quote, site visit..."></label>
+<label class="full">Requirement<textarea id="description" rows="2"></textarea></label>
+<label class="full">Notes<textarea id="notes" rows="3"></textarea></label>
+</div>
+<div class="dialogactions"><button type="button" id="cancel">Cancel</button><button class="primary">Save Lead</button></div>
+</form></dialog>
+
+<script src="app.js"></script>
+</body></html>

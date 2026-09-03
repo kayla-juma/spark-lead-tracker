@@ -1,0 +1,85 @@
+:root{--green:#123c35;--dark:#0b2824;--gold:#d4a017;--bg:#f4f7f6;--line:#dce5e1;--muted:#64748b;--red:#b42318;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#1f2933;font-family:Arial,sans-serif}
+.hidden{display:none!important}
+.login-screen{min-height:100vh;display:grid;place-items:center;background:var(--dark)}
+.login-card{background:#fff;width:min(410px,92vw);padding:32px;border-radius:18px;box-shadow:0 25px 80px #0005;text-align:center}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--gold);color:var(--dark);display:grid;place-items:center;font-weight:900;font-size:21px;margin:0 auto}
+.login-card h1{margin:4px 0;color:var(--green)}
+.login-card p:not(.eyebrow){color:var(--muted);line-height:1.5}
+.hint{display:block;text-align:center;color:var(--muted);margin-top:14px;font-size:13px}
+.full{width:100%}
+.app{min-height:100vh;display:grid;grid-template-columns:235px 1fr}
+.app aside{background:var(--dark);color:#fff;padding:22px 16px;display:flex;flex-direction:column}
+.brand{display:flex;gap:11px;align-items:center;margin-bottom:28px}
+.brand b{display:block;letter-spacing:.1em}.brand small{color:#b9cbc6}
+.app aside .logo{flex:none}
+nav{display:grid;gap:7px}
+.nav{border:0;background:transparent;color:#cbd9d5;text-align:left;padding:12px;border-radius:9px;font-weight:700;cursor:pointer}
+.nav.active,.nav:hover{background:#184a42;color:#fff}
+.sidebox{margin-top:auto;border:1px solid #2b514a;border-radius:11px;padding:13px}
+.sidebox span{display:block;color:#9eb5af;font-size:12px}
+.sidebox b{display:block;margin:4px 0 12px;word-break:break-word}
+.sidebox button{background:transparent;border:0;color:#e8b52e;padding:0;cursor:pointer}
+.app main{padding:28px 32px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.eyebrow{margin:0 0 4px;color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.top h1,h2{margin:0;color:var(--green)}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.actions button,button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}
+.primary{background:var(--green);border-color:var(--green);color:#fff}
+.cards{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:18px}
+.cards div{background:#fff;border:1px solid var(--line);padding:17px;border-radius:13px}
+.cards span{font-size:12px;color:var(--muted)}
+.cards strong{display:block;color:var(--green);font-size:23px;margin-top:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:19px;margin-bottom:14px}
+.panelhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.panelhead>b{font-size:18px;color:var(--green)}
+.muted{color:var(--muted);font-size:13px}
+.progress{height:9px;background:#e9efed;border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--gold)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar input,.toolbar select{width:auto;min-width:190px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+table{width:100%;border-collapse:collapse;min-width:980px}
+th,td{text-align:left;padding:11px;border-bottom:1px solid #e7ecea;font-size:13px;vertical-align:top}
+th{font-size:11px;color:var(--muted);text-transform:uppercase}
+.badge{display:inline-block;padding:5px 8px;border-radius:99px;background:#eef3f1;font-weight:700;font-size:11px}
+.badge.Won{background:#e2f6ea;color:#1a7a45}.badge.Lost{background:#fbe9e8;color:#a83a34}
+.rowbtn{padding:6px 8px;font-size:12px;margin-right:4px}
+.link{border:0;background:none;color:var(--green);cursor:pointer}
+.source-row{display:grid;grid-template-columns:100px 1fr 45px;gap:8px;align-items:center;margin:9px 0;font-size:13px}
+.bar{height:7px;background:#edf2f0;border-radius:99px}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.kanban{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-items:start}
+.column{background:#eaf0ee;border-radius:12px;padding:10px;min-height:260px}
+.column h3{font-size:13px;color:var(--green);margin:4px}
+.leadcard{background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px;margin-top:8px}
+.leadcard b{font-size:13px}.leadcard p{margin:4px 0;color:var(--muted);font-size:12px}
+.activity-item{padding:12px 0;border-bottom:1px solid var(--line)}
+.activity-item b{color:var(--green)}
+#notifyBtn{min-width:58px;color:var(--green)}
+#notifCount{display:inline-block;min-width:18px}
+.toast{position:fixed;right:24px;bottom:24px;width:min(360px,calc(100vw - 32px));background:var(--dark);color:#fff;padding:15px 17px;border-radius:12px;box-shadow:0 15px 40px #0004;z-index:20}
+.toast b{display:block;color:#e8b52e;margin-bottom:5px}
+.toast span{display:block;font-size:13px;color:#d8e4e0;line-height:1.4}
+.toast.hidden{display:none}
+#syncStatus::before{content:"●";margin-right:5px;color:#94a3b8}
+#syncStatus.on::before{color:#1a9d63}
+#syncStatus.err::before{color:#d9534f}
+dialog{width:min(850px,94vw);border:0;border-radius:16px;padding:0}
+dialog::backdrop{background:#0007}
+form{padding:23px}
+.dialoghead{display:flex;justify-content:space-between}
+.x{border:0!important;border-radius:50%!important;font-size:20px!important;padding:5px 11px!important}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.formgrid label{display:grid;gap:6px;font-size:12px;font-weight:700;color:var(--green)}
+.full{grid-column:1/-1}
+.dialogactions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(4,1fr)}.kanban{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){
+  .app{grid-template-columns:1fr}.app aside{padding:14px}.sidebox{display:none}
+  nav{grid-template-columns:repeat(5,1fr)}.nav{text-align:center;font-size:11px;padding:8px}
+  .app main{padding:18px 12px}.top{align-items:flex-start;flex-direction:column;gap:12px}
+  .cards,.grid2,.formgrid{grid-template-columns:1fr 1fr}.kanban{grid-template-columns:1fr 1fr}.full{grid-column:1/-1}
+}
