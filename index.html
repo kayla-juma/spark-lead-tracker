@@ -9,15 +9,31 @@
 <body>
 
 <div id="loginScreen" class="login-screen">
-  <div class="login-card">
-    <div class="login-mark"><div class="logo">S</div></div>
-    <p class="eyebrow">SPARK HOLDINGS · SALES</p>
-    <h1>Lead Tracker</h1>
-    <p class="login-copy">A clearer view of every enquiry, follow-up, and opportunity.</p>
-    <div class="login-divider"><span>Sign in to continue</span></div>
-    <div id="googleBtn" class="google-button-wrap"></div>
-    <p class="hint" id="loginStatus" role="status" aria-live="polite"></p>
-    <p class="login-footnote">Use your authorized Spark Google account.</p>
+  <div class="login-layout">
+    <section class="login-intro" aria-label="Spark Lead Tracker introduction">
+      <div class="login-brand"><span class="logo">S</span><span>SPARK <small>HOLDINGS</small></span></div>
+      <p class="eyebrow">SALES OPERATIONS</p>
+      <h1>Good relationships<br><em>start here.</em></h1>
+      <p class="login-lede">Bring every enquiry, follow-up, and opportunity into one clear view.</p>
+      <div class="login-visual" aria-hidden="true">
+        <div class="visual-heading"><span>YOUR SALES FLOW</span><span class="live-label"><i></i> TEAM WORKSPACE</span></div>
+        <div class="visual-stages">
+          <div class="visual-stage"><span class="stage-number">01</span><span class="stage-symbol">↗</span><b>New enquiry</b><small>Capture the opportunity</small></div>
+          <div class="visual-stage"><span class="stage-number">02</span><span class="stage-symbol">◎</span><b>Follow-up</b><small>Keep every next step clear</small></div>
+          <div class="visual-stage"><span class="stage-number">03</span><span class="stage-symbol">✦</span><b>Sales won</b><small>See progress together</small></div>
+        </div>
+        <div class="visual-footer"><span class="footer-line"></span><span>From first contact to lasting customer</span></div>
+      </div>
+    </section>
+    <div class="login-card">
+      <p class="eyebrow">YOUR SPARK WORKSPACE</p>
+      <h2>Welcome back</h2>
+      <p class="login-copy">Sign in to manage your leads and keep work moving.</p>
+      <div class="login-divider"><span>Secure sign-in</span></div>
+      <div id="googleBtn" class="google-button-wrap"></div>
+      <p class="hint" id="loginStatus" role="status" aria-live="polite"></p>
+      <p class="login-footnote"><span class="secure-icon">✓</span> Use your authorized Spark Google account.</p>
+    </div>
   </div>
 </div>
 
