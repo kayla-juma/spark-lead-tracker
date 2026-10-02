@@ -1,6 +1,6 @@
 // ====== CONFIG — fill these in after deployment (see README.txt) ======
 const CLIENT_ID ="252311945181-bvacq392co8b4991p21khegqumos06ak.apps.googleusercontent.com";
-const SYNC_URL = "https://script.google.com/macros/s/AKfycbyXGsMLGTfhNkvBONhXoXWYpYhvlOeT1CsoxdDkqbZoxC7bKCrftYx00S6fNPZX1Qxraw/exec";
+const SYNC_URL = "https://script.google.com/macros/s/AKfycbx5NSQy-2UgPnP3O3g5fbBpGwcz3sP1NSRVqKkCGjPF8c2mpyredeUm-IeUxan_iMMl_g/exec";
 // =========================================================================
 
 const services={"Spark Holdings":["Medical Supplies","Hardware Supplies","Office Supplies","Computers & Accessories","Industrial Safety Gear","Security Equipment","Other General Supplies"],"Spark Security Solutions":["Security Guarding","Residential Security","Commercial Security","Alarm Response","Security Assessment","Other Security Service"],"Spark Cleaning Solutions":["Contract Cleaning","Office Cleaning","Deep Cleaning","Specialised Cleaning","Post-Construction Cleaning","Other Cleaning Service"]};
