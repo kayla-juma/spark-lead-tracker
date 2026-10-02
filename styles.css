@@ -147,3 +147,29 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   #syncStatus{grid-column:1/-1}
   .cards,.toolbar{grid-template-columns:1fr 1fr}
 }
+
+/* Refined Spark sign-in */
+.login-screen{position:relative;isolation:isolate;overflow:hidden;padding:28px 16px;background:radial-gradient(ellipse at 50% 42%,#17483f 0%,#0b2824 52%,#071e1b 100%)}
+.login-screen::before,.login-screen::after{content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%}
+.login-screen::before{width:min(720px,90vw);aspect-ratio:1;left:-28%;top:-46%;border:1px solid #d4a01720;box-shadow:0 0 0 44px #d4a01708,0 0 0 90px #d4a01706}
+.login-screen::after{width:min(600px,80vw);aspect-ratio:1;right:-26%;bottom:-58%;border:1px solid #d7e7e21a;box-shadow:0 0 0 48px #d7e7e208,0 0 0 96px #d7e7e205}
+.login-card{position:relative;width:min(450px,100%);padding:42px 42px 30px;border:1px solid #ffffffc9;border-radius:24px;box-shadow:0 30px 90px #03110f70;text-align:center}
+.login-card::before{content:"";position:absolute;top:0;left:12%;right:12%;height:3px;border-radius:0 0 8px 8px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.login-mark{width:66px;height:66px;margin:0 auto 19px;padding:7px;border-radius:20px;background:#d4a01718}
+.login-card .logo{width:52px;height:52px;border-radius:15px;margin:0;background:linear-gradient(145deg,#e5b42c,#c88f08);box-shadow:0 7px 18px #a773102b;font-size:25px}
+.login-card .eyebrow{display:inline-block;margin:0 0 12px;padding:7px 10px;border:1px solid #d4a01735;border-radius:999px;background:#d4a01712;color:#9b7109;font-size:10px;letter-spacing:.14em}
+.login-card h1{margin:0;color:var(--green);font-size:36px;line-height:1.12;letter-spacing:-.035em}
+.login-card .login-copy{max-width:320px;margin:13px auto 23px;color:#64748b;font-size:15px;line-height:1.6}
+.login-divider{display:flex;align-items:center;gap:12px;margin:0 0 16px;color:#83908d;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.login-divider::before,.login-divider::after{content:"";height:1px;flex:1;background:var(--line)}
+.google-button-wrap{min-height:44px;display:flex;justify-content:center;align-items:center}
+.google-button-wrap iframe{max-width:100%}
+.login-card .hint{min-height:0;margin:12px 0 0;color:#9b332c;font-size:13px;line-height:1.5}
+.login-card .hint:empty{display:none}
+.login-card .login-footnote{margin:18px 0 0;padding-top:15px;border-top:1px solid #edf1ef;color:#83908d;font-size:11px;line-height:1.5}
+@media(max-width:480px){
+  .login-screen{padding:20px 14px}
+  .login-card{padding:34px 23px 24px;border-radius:20px}
+  .login-card h1{font-size:32px}
+  .login-card .login-copy{font-size:14px}
+}
