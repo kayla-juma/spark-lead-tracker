@@ -76,10 +76,74 @@ form{padding:23px}
 .formgrid label{display:grid;gap:6px;font-size:12px;font-weight:700;color:var(--green)}
 .full{grid-column:1/-1}
 .dialogactions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.dialogactions #formStatus{margin-right:auto;align-self:center}
+button:disabled{opacity:.65;cursor:wait}
 @media(max-width:1100px){.cards{grid-template-columns:repeat(4,1fr)}.kanban{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){
   .app{grid-template-columns:1fr}.app aside{padding:14px}.sidebox{display:none}
   nav{grid-template-columns:repeat(5,1fr)}.nav{text-align:center;font-size:11px;padding:8px}
   .app main{padding:18px 12px}.top{align-items:flex-start;flex-direction:column;gap:12px}
-  .cards,.grid2,.formgrid{grid-template-columns:1fr 1fr}.kanban{grid-template-columns:1fr 1fr}.full{grid-column:1/-1}
+  .cards,.grid2,.formgrid{grid-template-columns:1fr 1fr}.kanban{grid-template-columns:repeat(6,minmax(180px,1fr));overflow-x:auto;padding-bottom:8px}.full{grid-column:1/-1}
+}
+
+/* Layout and responsive polish */
+.app{grid-template-columns:235px minmax(0,1fr);min-width:0}
+.app main{min-width:0;max-width:100%;}
+.view{display:none;min-width:0}
+.view.active{display:block}
+.panel,.cards>div{box-shadow:0 2px 8px #0b282408}
+.panel{padding:20px}
+.top h1{font-size:clamp(25px,2.5vw,34px);line-height:1.15;letter-spacing:-.025em}
+.cards>div{transition:transform .16s ease,box-shadow .16s ease}
+.cards>div:hover{transform:translateY(-2px);box-shadow:0 8px 22px #0b282412}
+.progress{margin:14px 0 9px}
+.progress i{transition:width .25s ease}
+.toolbar input{flex:1 1 260px;min-width:min(100%,220px)}
+.toolbar select{flex:0 1 210px}
+.view .panel{overflow:hidden}
+.view .panel>div[style*="overflow:auto"]{max-width:100%;overscroll-behavior-x:contain}
+.kanban{min-width:0}
+.column{min-width:0}
+.leadcard{overflow-wrap:anywhere;box-shadow:0 1px 3px #0b28240b}
+.activity-item:last-child{border-bottom:0}
+.activity-item span{line-height:1.6}
+.customer-tag{display:inline-block;margin-left:7px;padding:3px 7px;border-radius:999px;background:#fff3d1;color:#795900;font-size:10px;font-weight:800;vertical-align:middle}
+.relationship-hint{padding:10px 12px;border-radius:9px;background:#f3f7f5;color:var(--muted);font-size:12px;line-height:1.5}
+.link{padding:7px 9px}
+.link:hover{background:#edf3f1}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #d4a01766;outline-offset:2px}
+
+@media(max-width:1100px){
+  .app{grid-template-columns:210px minmax(0,1fr)}
+  .cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .kanban{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .app{display:block}
+  .app aside{padding:12px 12px 9px}
+  .brand{margin-bottom:11px}
+  nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px;scrollbar-width:thin}
+  .nav{flex:0 0 auto;white-space:nowrap;font-size:12px;padding:9px 12px}
+  .app main{padding:18px 12px 28px}
+  .top{flex-direction:column;align-items:stretch;margin-bottom:17px}
+  .actions{width:100%;gap:6px}
+  .actions button{padding:9px 10px}
+  #syncStatus{flex:1 1 100%;}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .cards>div{padding:13px}
+  .cards strong{font-size:21px}
+  .grid2{grid-template-columns:1fr;gap:0}
+  .panel{padding:16px;margin-bottom:11px}
+  .kanban{display:grid;grid-template-columns:repeat(6,minmax(170px,1fr));overflow-x:auto;overscroll-behavior-x:contain;padding:0 0 10px}
+  .column{min-height:210px}
+  .toolbar{display:grid;grid-template-columns:1fr 1fr}
+  .toolbar input{grid-column:1/-1;width:100%;min-width:0}
+  .toolbar select{width:100%;min-width:0}
+  .dialogactions{flex-wrap:wrap}
+  .dialogactions #formStatus{flex-basis:100%;}
+}
+@media(max-width:380px){
+  .actions{display:grid;grid-template-columns:1fr 1fr}
+  #syncStatus{grid-column:1/-1}
+  .cards,.toolbar{grid-template-columns:1fr 1fr}
 }

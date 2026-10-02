@@ -11,7 +11,8 @@ let knownLeadIds=new Set(), firstLoadDone=false, pollTimer=null;
 
 function esc(s=""){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function money(n){return "MWK "+Number(n||0).toLocaleString()}
-function due(d){if(!d)return false;let t=new Date();t.setHours(0,0,0,0);return new Date(d+"T00:00:00")<=t}
+function due(d){if(!d)return false;const today=new Date();const localToday=[today.getFullYear(),String(today.getMonth()+1).padStart(2,"0"),String(today.getDate()).padStart(2,"0")].join("-");return String(d).slice(0,10)<=localToday}
+function displayDate(d){if(!d)return "—";const [y,m,day]=String(d).slice(0,10).split("-").map(Number);return y&&m&&day?new Date(y,m-1,day).toLocaleDateString():"—"}
 function decodeJwt(t){try{return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))}catch(e){return null}}
 
 // ---------- Google Sign-In ----------
@@ -36,7 +37,8 @@ function handleCredentialResponse(resp){
 
 async function startApp(){
   $("loginStatus").textContent="Signing in…";
-  let res=await syncCall("GET",null);
+  let res;
+  try { res=await syncCall("GET",null); } catch(err) { res=null; }
   if(!res||!res.ok){
     let msg=res&&res.error==="not_authorized"
       ?`${res.email||"Your account"} isn't on the Spark staff list yet. Ask an admin to add your email to the Staff sheet.`
@@ -63,13 +65,17 @@ $("logoutBtn").onclick=()=>{
 
 // ---------- Sync ----------
 async function syncCall(method,body){
+  let timeout;
   try{
-    let url=SYNC_URL+(method==="GET"?`?token=${encodeURIComponent(token)}`:"");
-    let opts=method==="GET"?{method:"GET"}:{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({...body,token})};
-    let res=await fetch(url,opts);
+    let url=SYNC_URL;
+    let controller=new AbortController();timeout=setTimeout(()=>controller.abort(),15000);
+    let payload=method==="GET"?{action:"get"}:body;
+    let opts={method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({...payload,token}),signal:controller.signal};
+    let res=await fetch(url,opts);clearTimeout(timeout);
     return await res.json();
   }catch(err){
-    setSyncStatus("err","Sync failed — check your connection.");
+    clearTimeout(timeout);
+    setSyncStatus("err",err.name==="AbortError"?"Sync timed out — try again.":"Sync failed — check your connection.");
     return null;
   }
 }
@@ -139,7 +145,7 @@ function fillAssignedOptions(){
 
 function table(data){
   if(!data.length)return '<div class="muted">No records found.</div>';
-  return `<div style="overflow:auto"><table><thead><tr><th>Customer</th><th>Business</th><th>Product / Service</th><th>Source</th><th>Status</th><th>Follow-up</th><th>Value</th><th>Assigned</th><th></th></tr></thead><tbody>${data.map(x=>`<tr><td><b>${esc(x.name)}</b><br>${esc(x.company||"")}</td><td>${esc(x.business)}</td><td>${esc(x.service)}</td><td>${esc(x.source)}</td><td><span class="badge ${esc(x.status)}">${esc(x.status)}</span></td><td>${x.followup||"—"}</td><td>${money(x.value)}</td><td>${esc(x.assigned||"—")}</td><td><button class="rowbtn" onclick="editLead('${x.id}')">Edit</button><button class="rowbtn" onclick="delLead('${x.id}')">Delete</button></td></tr>`).join("")}</tbody></table></div>`;
+  return `<div style="overflow:auto"><table><thead><tr><th>Customer</th><th>Business</th><th>Product / Service</th><th>Source</th><th>Status</th><th>Follow-up</th><th>Value</th><th>Assigned</th><th></th></tr></thead><tbody>${data.map(x=>`<tr><td><b>${esc(x.name)}</b>${x.customerType==="existing"?'<span class="customer-tag">Existing</span>':''}<br>${esc(x.company||"")}</td><td>${esc(x.business)}</td><td>${esc(x.service)}</td><td>${esc(x.source)}</td><td><span class="badge ${esc(x.status)}">${esc(x.status)}</span></td><td>${esc(displayDate(x.followup))}</td><td>${money(x.value)}</td><td>${esc(x.assigned||"—")}</td><td><button class="rowbtn" data-action="edit" data-id="${esc(x.id)}">Edit</button>${me&&me.role==="admin"?`<button class="rowbtn" data-action="delete" data-id="${esc(x.id)}">Delete</button>`:""}</td></tr>`).join("")}</tbody></table></div>`;
 }
 
 function render(){
@@ -154,8 +160,12 @@ function render(){
   $("mConv").textContent=(closed?Math.round(leads.filter(x=>x.status==="Won").length/closed*100):0)+"%";
 
   let pv=leads.filter(x=>["Qualified","Quoted"].includes(x.status)).reduce((a,x)=>a+Number(x.value||0),0);
+  let activeValue=leads.filter(x=>!["Won","Lost"].includes(x.status)).reduce((a,x)=>a+Number(x.value||0),0);
+  let pipelineShare=activeValue?Math.round(pv/activeValue*100):0;
   $("pipelineValue").textContent=money(pv);
-  $("progressBar").style.width=Math.min(100,pv?60:0)+"%";
+  $("progressBar").style.width=Math.min(100,pipelineShare)+"%";
+  $("pipelineShare").textContent=pipelineShare+"%";
+  $("progressBar").parentElement.setAttribute("aria-valuenow",pipelineShare);
 
   let sources={};leads.forEach(x=>sources[x.source]=(sources[x.source]||0)+1);
   let max=Math.max(1,...Object.values(sources));
@@ -173,14 +183,14 @@ function render(){
 }
 
 function applyFilters(){
-  let q=$("search").value.toLowerCase(),b=$("businessFilter").value,s=$("statusFilter").value;
-  let d=leads.filter(x=>(!q||[x.name,x.company,x.service,x.phone,x.email,x.description].join(" ").toLowerCase().includes(q))&&(!b||x.business===b)&&(!s||x.status===s));
+  let q=$("search").value.toLowerCase(),b=$("businessFilter").value,s=$("statusFilter").value,t=$("customerTypeFilter").value;
+  let d=leads.filter(x=>(!q||[x.name,x.company,x.service,x.phone,x.email,x.description,x.customerType].join(" ").toLowerCase().includes(q))&&(!b||x.business===b)&&(!s||x.status===s)&&(!t||(x.customerType||"new")===t));
   $("allLeads").innerHTML=table(d);
 }
 
 function renderKanban(){
   let sts=["New","Contacted","Qualified","Quoted","Won","Lost"];
-  $("kanban").innerHTML=sts.map(s=>`<div class="column"><h3>${s} <span>(${leads.filter(x=>x.status===s).length})</span></h3>${leads.filter(x=>x.status===s).map(x=>`<div class="leadcard"><b>${esc(x.name)}</b><p>${esc(x.service)}</p><p>${money(x.value)}</p><button class="rowbtn" onclick="editLead('${x.id}')">Open</button></div>`).join("")}</div>`).join("");
+  $("kanban").innerHTML=sts.map(s=>`<div class="column"><h3>${esc(s)} <span>(${leads.filter(x=>x.status===s).length})</span></h3>${leads.filter(x=>x.status===s).map(x=>`<div class="leadcard"><b>${esc(x.name)}</b>${x.customerType==="existing"?'<span class="customer-tag">Existing</span>':''}<p>${esc(x.service)}</p><p>${money(x.value)}</p><button class="rowbtn" data-action="edit" data-id="${esc(x.id)}">Open</button></div>`).join("")}</div>`).join("");
 }
 
 function fillServices(sel=""){
@@ -200,28 +210,39 @@ function go(v){
 
 // ---------- Lead form ----------
 $("business").onchange=()=>fillServices();
-$("newLeadBtn").onclick=()=>{$("leadForm").reset();$("leadId").value="";$("formTitle").textContent="New Lead";fillServices();fillAssignedOptions();$("dlg").showModal()};
+$("customerType").onchange=()=>{$("relationshipHint").textContent=$("customerType").value==="existing"?"Returning customer. Add this as a new opportunity and choose the service they need now.":"New to Spark. If they become a customer, keep their lead status updated as the opportunity progresses."};
+$("newLeadBtn").onclick=()=>{$("leadForm").reset();$("leadId").value="";$("formTitle").textContent="New Lead";$("formStatus").textContent="";$("saveLeadBtn").disabled=false;$("saveLeadBtn").textContent="Save Lead";$("customerType").dispatchEvent(new Event("change"));fillServices();fillAssignedOptions();$("dlg").showModal()};
 $("cancel").onclick=()=>$("dlg").close();
 $("closeDlg").onclick=()=>$("dlg").close();
 
 $("leadForm").onsubmit=async e=>{
   e.preventDefault();
+  const saveBtn=$("saveLeadBtn"),formStatus=$("formStatus");
+  if(saveBtn.disabled)return;
+  saveBtn.disabled=true;saveBtn.textContent="Saving…";formStatus.textContent="Saving lead…";
   let id=$("leadId").value||crypto.randomUUID();
   let old=leads.find(x=>x.id===id);
-  let r={id,createdAt:old?.createdAt,name:$("name").value,company:$("company").value,phone:$("phone").value,email:$("email").value,business:$("business").value,service:$("service").value,source:$("source").value,status:$("status").value,value:Number($("value").value||0),followup:$("followup").value,assigned:$("assigned").value,nextAction:$("nextAction").value,description:$("description").value,notes:$("notes").value};
-  $("dlg").close();
+  let r={id,createdAt:old?.createdAt,name:$("name").value,customerType:$("customerType").value,company:$("company").value,phone:$("phone").value,email:$("email").value,business:$("business").value,service:$("service").value,source:$("source").value,status:$("status").value,value:Number($("value").value||0),followup:$("followup").value,assigned:$("assigned").value,nextAction:$("nextAction").value,description:$("description").value,notes:$("notes").value};
   let res=await syncCall("POST",{action:"upsert",lead:r});
-  if(res&&res.ok){let full=await syncCall("GET",null);if(full&&full.ok){applyData(full,false);render()}}
-  else alert("Could not save — check your connection and try again.");
+  if(res&&res.ok){let full=await syncCall("GET",null);if(full&&full.ok){applyData(full,false);render();$("dlg").close();formStatus.textContent=""}else formStatus.textContent="Lead saved, but the latest list could not be loaded. It will refresh automatically."}
+  else formStatus.textContent="Could not save. Check your connection and try again.";
+  saveBtn.disabled=false;saveBtn.textContent="Save Lead";
 };
 
 window.editLead=id=>{
   let x=leads.find(y=>y.id===id);
-  $("leadId").value=x.id;$("name").value=x.name;$("company").value=x.company;$("phone").value=x.phone;$("email").value=x.email;
+  $("leadId").value=x.id;$("name").value=x.name;$("customerType").value=x.customerType||"new";$("company").value=x.company;$("phone").value=x.phone;$("email").value=x.email;
   $("business").value=x.business;fillServices(x.service);$("source").value=x.source;$("status").value=x.status;$("value").value=x.value;
   $("followup").value=x.followup;fillAssignedOptions();$("assigned").value=x.assigned;$("nextAction").value=x.nextAction;$("description").value=x.description;$("notes").value=x.notes;
-  $("formTitle").textContent="Edit Lead";$("dlg").showModal();
+  $("formTitle").textContent="Edit Lead";$("formStatus").textContent="";$("saveLeadBtn").disabled=false;$("saveLeadBtn").textContent="Save Lead";$("customerType").dispatchEvent(new Event("change"));$("dlg").showModal();
 };
+
+document.addEventListener("click",e=>{
+  const button=e.target.closest("button[data-action]");
+  if(!button)return;
+  if(button.dataset.action==="edit")window.editLead(button.dataset.id);
+  if(button.dataset.action==="delete")window.delLead(button.dataset.id);
+});
 
 window.delLead=async id=>{
   if(me && me.role!=="admin"){alert("Only an admin can delete leads. Ask an admin to remove this one.");return}
@@ -232,11 +253,11 @@ window.delLead=async id=>{
   else alert(res&&res.error==="forbidden_not_admin"?"Only an admin can delete leads.":"Could not delete — check your connection.");
 };
 
-["search","businessFilter","statusFilter"].forEach(id=>$(id).addEventListener("input",render));
+["search","businessFilter","statusFilter","customerTypeFilter"].forEach(id=>$(id).addEventListener("input",render));
 
 $("exportBtn").onclick=()=>{
-  let h=["Created","Customer","Company","Phone","Email","Business","Service","Source","Status","Value","Follow-up","Assigned","Next Action","Requirement","Notes"];
-  let rows=leads.map(x=>[x.createdAt,x.name,x.company,x.phone,x.email,x.business,x.service,x.source,x.status,x.value,x.followup,x.assigned,x.nextAction,x.description,x.notes]);
+  let h=["Created","Customer","Relationship","Company","Phone","Email","Business","Service","Source","Status","Value","Follow-up","Assigned","Next Action","Requirement","Notes"];
+  let rows=leads.map(x=>[x.createdAt,x.name,x.customerType==="existing"?"Existing customer":"New prospect",x.company,x.phone,x.email,x.business,x.service,x.source,x.status,x.value,x.followup,x.assigned,x.nextAction,x.description,x.notes]);
   let q=v=>`"${String(v??"").replaceAll('"','""')}"`;
   let csv=[h,...rows].map(r=>r.map(q).join(",")).join("\n");
   let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="spark-leads-v3.csv";a.click();

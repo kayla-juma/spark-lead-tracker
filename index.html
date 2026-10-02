@@ -49,17 +49,17 @@
     <div><span>Quoted</span><strong id="mQuoted">0</strong></div>
     <div><span>Won</span><strong id="mWon">0</strong></div>
     <div><span>Lost</span><strong id="mLost">0</strong></div>
-    <div><span>Conversion</span><strong id="mConv">0%</strong></div>
+    <div><span title="Won leads divided by leads marked Won or Lost">Win rate (closed)</span><strong id="mConv">0%</strong></div>
   </div>
   <div class="grid2">
-    <section class="panel"><div class="panelhead"><div><p class="eyebrow">Sales opportunity</p><h2>Pipeline value</h2></div><b id="pipelineValue">MWK 0</b></div><div class="progress"><i id="progressBar"></i></div><p class="muted">Qualified + quoted opportunities</p></section>
+    <section class="panel"><div class="panelhead"><div><p class="eyebrow">Sales opportunity</p><h2>Pipeline value</h2></div><b id="pipelineValue">MWK 0</b></div><div class="progress" role="progressbar" aria-label="Qualified and quoted value as a share of active lead value" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="progressBar"></i></div><p class="muted">Qualified + quoted value as a share of active lead value <b id="pipelineShare">0%</b></p></section>
     <section class="panel"><div class="panelhead"><div><p class="eyebrow">Marketing attribution</p><h2>Leads by source</h2></div></div><div id="sourceStats"></div></section>
   </div>
   <section class="panel"><div class="panelhead"><div><p class="eyebrow">Latest activity</p><h2>Recent leads</h2></div><button class="link" data-go="leads">View all →</button></div><div id="recent"></div></section>
 </section>
 
 <section id="leadsView" class="view"><section class="panel">
-<div class="toolbar"><input id="search" placeholder="Search customer, company, service..."><select id="businessFilter"><option value="">All businesses</option><option>Spark Holdings</option><option>Spark Security Solutions</option><option>Spark Cleaning Solutions</option></select><select id="statusFilter"><option value="">All statuses</option><option>New</option><option>Contacted</option><option>Qualified</option><option>Quoted</option><option>Won</option><option>Lost</option></select></div>
+<div class="toolbar"><input id="search" placeholder="Search customer, company, service..."><select id="businessFilter"><option value="">All businesses</option><option>Spark Holdings</option><option>Spark Security Solutions</option><option>Spark Cleaning Solutions</option></select><select id="statusFilter"><option value="">All statuses</option><option>New</option><option>Contacted</option><option>Qualified</option><option>Quoted</option><option>Won</option><option>Lost</option></select><select id="customerTypeFilter"><option value="">New + existing customers</option><option value="new">New prospects</option><option value="existing">Existing customers</option></select></div>
 <div id="allLeads"></div></section></section>
 
 <section id="pipelineView" class="view"><div class="kanban" id="kanban"></div></section>
@@ -72,8 +72,9 @@
 <div class="dialoghead"><div><p class="eyebrow">Lead record</p><h2 id="formTitle">New Lead</h2></div><button type="button" id="closeDlg" class="x">×</button></div>
 <input type="hidden" id="leadId">
 <div class="formgrid">
-<label>Customer name<input id="name" required></label><label>Company / organisation<input id="company"></label>
-<label>Phone<input id="phone"></label><label>Email<input id="email" type="email"></label>
+<label>Customer name<input id="name" required></label><label>Relationship<select id="customerType" required><option value="new">New prospect</option><option value="existing">Existing customer</option></select></label>
+<label>Company / organisation<input id="company"></label><label>Phone<input id="phone"></label>
+<label>Email<input id="email" type="email"></label><div class="relationship-hint full" id="relationshipHint">New to Spark. If they become a customer, keep their lead status updated as the opportunity progresses.</div>
 <label>Business<select id="business" required><option value="">Select</option><option>Spark Holdings</option><option>Spark Security Solutions</option><option>Spark Cleaning Solutions</option></select></label>
 <label>Product / service<select id="service" required><option value="">Select</option></select></label>
 <label>Lead source<select id="source" required><option value="">Select</option><option>WhatsApp</option><option>Phone</option><option>Email</option><option>Website</option><option>Facebook</option><option>Instagram</option><option>Referral</option><option>Walk-in</option><option>Other</option></select></label>
@@ -83,7 +84,7 @@
 <label class="full">Requirement<textarea id="description" rows="2"></textarea></label>
 <label class="full">Notes<textarea id="notes" rows="3"></textarea></label>
 </div>
-<div class="dialogactions"><button type="button" id="cancel">Cancel</button><button class="primary">Save Lead</button></div>
+<div class="dialogactions"><span id="formStatus" class="muted" role="status" aria-live="polite"></span><button type="button" id="cancel">Cancel</button><button id="saveLeadBtn" class="primary">Save Lead</button></div>
 </form></dialog>
 
 <script src="app.js"></script>
